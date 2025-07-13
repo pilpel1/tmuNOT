@@ -75,9 +75,80 @@ def generate_html():
             background-color: rgba(255, 255, 255, 0.8);
             transition: none;
         }}
+        
+        .start-screen {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        
+        .start-screen.hidden {{
+            display: none;
+        }}
+        
+        .start-left {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background-color: red;
+        }}
+        
+        .start-right {{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background-color: green;
+        }}
+        
+        .play-button {{
+            position: relative;
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }}
+        
+        .play-button:hover {{
+            background-color: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }}
+        
+        .play-triangle {{
+            width: 0;
+            height: 0;
+            border-left: 30px solid rgba(0, 0, 0, 0.7);
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            margin-left: 8px;
+        }}
     </style>
   </head>
   <body>
+      <div class="start-screen" id="startScreen">
+          <div class="start-left"></div>
+          <div class="start-right"></div>
+          <div class="play-button" id="playButton">
+              <div class="play-triangle"></div>
+          </div>
+      </div>
+      
       <div class="progress-container">
           <div class="progress-bar" id="progressBar"></div>
       </div>
@@ -88,9 +159,14 @@ def generate_html():
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const progressBar = document.getElementById('progressBar');
+        const startScreen = document.getElementById('startScreen');
+        const playButton = document.getElementById('playButton');
+        
+        // Game state
+        let gameStarted = false;
         
         // Timer state
-        let timerState = 'running'; // 'running', 'paused', 'stopped'
+        let timerState = 'stopped'; // 'running', 'paused', 'stopped'
         let startTime = null;
         let pausedTime = 0;
         let animationId = null;
@@ -103,10 +179,20 @@ def generate_html():
                     slide.classList.add('active');
                 }}
             }});
-            resetTimer();
+            if (gameStarted) {{
+                resetTimer();
+            }}
+        }}
+        
+        function startGame() {{
+            gameStarted = true;
+            startScreen.classList.add('hidden');
+            showSlide(0);
         }}
         
         function resetTimer() {{
+            if (!gameStarted) return;
+            
             if (animationId) {{
                 cancelAnimationFrame(animationId);
             }}
@@ -192,6 +278,7 @@ def generate_html():
         }}
         
         function manualNavigation() {{
+            if (!gameStarted) return;
             // Stop timer on manual navigation
             pauseTimer();
             const now = Date.now();
@@ -208,29 +295,38 @@ def generate_html():
             document.body.tabIndex = -1;
             document.body.focus();
             
-            if (slides.length > 0) {{
-                showSlide(0);
-            }}
+            // Don't start game automatically - wait for user to click play
         }});
         
         // Add keyboard event listener (only one to avoid duplicates)
         document.addEventListener('keydown', (e) => {{
             console.log('Key pressed:', e.key);
-            if (e.key === 'ArrowRight') {{
-                manualNavigation();
-                nextSlide();
-            }} else if (e.key === 'ArrowLeft') {{
-                manualNavigation();
-                prevSlide();
-            }} else if (e.key === ' ') {{
+            if (e.key === ' ') {{
                 e.preventDefault();
-                toggleTimer();
+                if (!gameStarted) {{
+                    startGame();
+                }} else {{
+                    toggleTimer();
+                }}
+            }} else if (gameStarted) {{
+                if (e.key === 'ArrowRight') {{
+                    manualNavigation();
+                    nextSlide();
+                }} else if (e.key === 'ArrowLeft') {{
+                    manualNavigation();
+                    prevSlide();
+                }}
             }}
         }});
         
         // Focus body when clicked to ensure keyboard events work
         document.addEventListener('click', (e) => {{
             document.body.focus();
+            
+            if (!gameStarted) {{
+                return; // Let play button handle the click
+            }}
+            
             const x = e.clientX;
             const width = window.innerWidth;
             manualNavigation();
@@ -239,6 +335,12 @@ def generate_html():
             }} else {{
                 nextSlide();
             }}
+        }});
+        
+        // Play button click handler
+        playButton.addEventListener('click', (e) => {{
+            e.stopPropagation();
+            startGame();
         }});
     </script>
 </body>
