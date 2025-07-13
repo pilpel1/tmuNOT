@@ -13,8 +13,25 @@ def generate_html():
     print(f"Found {len(images)} images")
     
     slides = []
+    last_color = None
+    color_count = 0
+    
     for img in images:
-        color = random.choice(['red', 'green'])
+        # Prevent more than 3 consecutive same colors
+        if color_count >= 3:
+            # Force opposite color
+            color = 'green' if last_color == 'red' else 'red'
+            color_count = 1
+        else:
+            # Random choice
+            color = random.choice(['red', 'green'])
+            if color == last_color:
+                color_count += 1
+            else:
+                color_count = 1
+        
+        last_color = color
+        
         slide = f"""
         <div class="slide" style="background-color: {color};">
             <img src="{img}" alt="Slide Image">
