@@ -155,6 +155,26 @@ def generate_html():
             border-bottom: 20px solid transparent;
             margin-left: 8px;
         }}
+        
+        .slide-counter {{
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            z-index: 1500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }}
+        
+        .slide-counter.visible {{
+            opacity: 1;
+        }}
     </style>
   </head>
   <body>
@@ -169,6 +189,9 @@ def generate_html():
       <div class="progress-container">
           <div class="progress-bar" id="progressBar"></div>
       </div>
+      
+      <div class="slide-counter" id="slideCounter">1/{len(images)}</div>
+      
       {''.join(slides)}
     
     <script>
@@ -178,6 +201,7 @@ def generate_html():
         const progressBar = document.getElementById('progressBar');
         const startScreen = document.getElementById('startScreen');
         const playButton = document.getElementById('playButton');
+        const slideCounter = document.getElementById('slideCounter');
         
         // Game state
         let gameStarted = false;
@@ -196,6 +220,10 @@ def generate_html():
                     slide.classList.add('active');
                 }}
             }});
+            
+            // Update slide counter
+            slideCounter.textContent = `${{n + 1}}/${{slides.length}}`;
+            
             if (gameStarted) {{
                 resetTimer();
             }}
@@ -204,6 +232,7 @@ def generate_html():
         function startGame() {{
             gameStarted = true;
             startScreen.classList.add('hidden');
+            slideCounter.classList.add('visible');
             showSlide(0);
         }}
         
