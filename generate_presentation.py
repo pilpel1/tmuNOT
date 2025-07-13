@@ -6,7 +6,7 @@ def generate_html():
     # Get all images: jpg, jpeg, png
     image_dir = 'images'
     images = [os.path.join(image_dir, f).replace('\\', '/') for f in os.listdir(image_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
-    images.sort()  # Sort alphabetically
+    random.shuffle(images)  # Randomize order
     print(f"Found {len(images)} images")
     
     slides = []
