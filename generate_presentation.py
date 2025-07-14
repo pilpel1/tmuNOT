@@ -4,6 +4,7 @@ import glob
 
 # Configuration
 SLIDE_DURATION = 4  # seconds per slide
+BREAK_INTERVAL = 10  # slides before break
 
 def generate_html():
     # Get all images: jpg, jpeg, png
@@ -46,6 +47,7 @@ def generate_html():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {{
             margin: 0;
@@ -175,6 +177,93 @@ def generate_html():
         .slide-counter.visible {{
             opacity: 1;
         }}
+        
+        .break-screen {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }}
+        
+        .break-screen.hidden {{
+            display: none;
+        }}
+        
+        .break-left {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background-color: red;
+        }}
+        
+        .break-right {{
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background-color: green;
+        }}
+        
+        .break-content {{
+            position: relative;
+            z-index: 2001;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            direction: rtl;
+            font-family: 'Heebo', sans-serif;
+        }}
+        
+        .break-title {{
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }}
+        
+        .break-info {{
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }}
+        
+        .continue-button {{
+            position: relative;
+            width: 120px;
+            height: 120px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }}
+        
+        .continue-button:hover {{
+            background-color: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }}
+        
+        .continue-triangle {{
+            width: 0;
+            height: 0;
+            border-left: 30px solid rgba(0, 0, 0, 0.7);
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            margin-left: 8px;
+        }}
     </style>
   </head>
   <body>
@@ -192,19 +281,38 @@ def generate_html():
       
       <div class="slide-counter" id="slideCounter">1/{len(images)}</div>
       
+      <div class="break-screen hidden" id="breakScreen">
+          <div class="break-left"></div>
+          <div class="break-right"></div>
+          <div class="break-content">
+              <div class="break-title">הפסקה!</div>
+              <div class="break-info" id="breakInfo">סבב 1 הסתיים</div>
+              <div class="break-info" id="breakProgress">תמונות 1-10 מתוך {len(images)}</div>
+          </div>
+          <div class="continue-button" id="continueButton">
+              <div class="continue-triangle"></div>
+          </div>
+      </div>
+      
       {''.join(slides)}
     
     <script>
         const SLIDE_DURATION = {int(SLIDE_DURATION * 1000)}; // milliseconds
+        const BREAK_INTERVAL = {BREAK_INTERVAL}; // slides before break
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const progressBar = document.getElementById('progressBar');
         const startScreen = document.getElementById('startScreen');
         const playButton = document.getElementById('playButton');
         const slideCounter = document.getElementById('slideCounter');
+        const breakScreen = document.getElementById('breakScreen');
+        const continueButton = document.getElementById('continueButton');
+        const breakInfo = document.getElementById('breakInfo');
+        const breakProgress = document.getElementById('breakProgress');
         
         // Game state
         let gameStarted = false;
+        let onBreak = false;
         
         // Timer state
         let timerState = 'stopped'; // 'running', 'paused', 'stopped'
@@ -236,8 +344,33 @@ def generate_html():
             showSlide(0);
         }}
         
+        function showBreakScreen() {{
+            onBreak = true;
+            timerState = 'paused';
+            if (animationId) {{
+                cancelAnimationFrame(animationId);
+            }}
+            
+            const roundNumber = Math.floor(currentSlide / BREAK_INTERVAL);
+            const startSlide = (roundNumber - 1) * BREAK_INTERVAL + 1;
+            const endSlide = roundNumber * BREAK_INTERVAL;
+            
+            breakInfo.textContent = `סבב ${{roundNumber}} הסתיים`;
+            breakProgress.textContent = `תמונות ${{startSlide}}-${{endSlide}} מתוך ${{slides.length}}`;
+            
+            breakScreen.classList.remove('hidden');
+        }}
+        
+        function hideBreakScreen() {{
+            onBreak = false;
+            breakScreen.classList.add('hidden');
+            if (gameStarted && currentSlide < slides.length - 1) {{
+                resetTimer();
+            }}
+        }}
+        
         function resetTimer() {{
-            if (!gameStarted) return;
+            if (!gameStarted || onBreak) return;
             
             if (animationId) {{
                 cancelAnimationFrame(animationId);
@@ -313,6 +446,11 @@ def generate_html():
             if (currentSlide < slides.length - 1) {{
                 currentSlide++;
                 showSlide(currentSlide);
+                
+                // Check if it's time for a break (after showing the slide)
+                if (currentSlide % BREAK_INTERVAL === 0 && currentSlide < slides.length - 1) {{
+                    showBreakScreen();
+                }}
             }}
         }}
         
@@ -324,7 +462,7 @@ def generate_html():
         }}
         
         function manualNavigation() {{
-            if (!gameStarted) return;
+            if (!gameStarted || onBreak) return;
             // Stop timer on manual navigation
             pauseTimer();
             const now = Date.now();
@@ -351,10 +489,12 @@ def generate_html():
                 e.preventDefault();
                 if (!gameStarted) {{
                     startGame();
+                }} else if (onBreak) {{
+                    hideBreakScreen();
                 }} else {{
                     toggleTimer();
                 }}
-            }} else if (gameStarted) {{
+            }} else if (gameStarted && !onBreak) {{
                 if (e.key === 'ArrowRight') {{
                     manualNavigation();
                     nextSlide();
@@ -369,8 +509,8 @@ def generate_html():
         document.addEventListener('click', (e) => {{
             document.body.focus();
             
-            if (!gameStarted) {{
-                return; // Let play button handle the click
+            if (!gameStarted || onBreak) {{
+                return; // Let play/continue button handle the click
             }}
             
             const x = e.clientX;
@@ -387,6 +527,12 @@ def generate_html():
         playButton.addEventListener('click', (e) => {{
             e.stopPropagation();
             startGame();
+        }});
+        
+        // Continue button click handler
+        continueButton.addEventListener('click', (e) => {{
+            e.stopPropagation();
+            hideBreakScreen();
         }});
     </script>
 </body>
