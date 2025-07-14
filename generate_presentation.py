@@ -264,6 +264,118 @@ def generate_html():
             border-bottom: 20px solid transparent;
             margin-left: 8px;
         }}
+        
+        .settings-button {{
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }}
+        
+        .settings-button:hover {{
+            background-color: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+        }}
+        
+        .settings-panel {{
+            position: absolute;
+            bottom: 90px;
+            left: 30px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Heebo', sans-serif;
+            direction: rtl;
+            text-align: right;
+            z-index: 2001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }}
+        
+        .settings-panel.visible {{
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }}
+        
+        .settings-title {{
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: right;
+        }}
+        
+        .setting-item {{
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+        }}
+        
+        .setting-label {{
+            font-size: 14px;
+            min-width: 100px;
+        }}
+        
+        .setting-input {{
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 14px;
+            width: 60px;
+            text-align: center;
+            color: black;
+        }}
+        
+        .setting-select {{
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 14px;
+            width: 120px;
+            color: black;
+            font-family: 'Heebo', sans-serif;
+            cursor: pointer;
+        }}
+        
+        .save-button {{
+            background-color: rgba(76, 175, 80, 0.9);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-family: 'Heebo', sans-serif;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }}
+        
+        .save-button:hover {{
+            background-color: rgba(76, 175, 80, 1);
+        }}
+        
+        .save-button.success {{
+            background-color: rgba(46, 125, 50, 1);
+        }}
     </style>
   </head>
   <body>
@@ -272,6 +384,28 @@ def generate_html():
           <div class="start-right"></div>
           <div class="play-button" id="playButton">
               <div class="play-triangle"></div>
+          </div>
+          <div class="settings-button" id="settingsButton">
+              ⚙️
+          </div>
+          <div class="settings-panel" id="settingsPanel">
+              <div class="settings-title">הגדרות משחק</div>
+              <div class="setting-item">
+                  <label class="setting-label">זמן לתמונה (שניות):</label>
+                  <input type="number" id="slideDuration" class="setting-input" value="4" min="1" max="30">
+              </div>
+              <div class="setting-item">
+                  <label class="setting-label">תמונות לסבב:</label>
+                  <select id="breakInterval" class="setting-select">
+                      <option value="5">5 תמונות</option>
+                      <option value="10" selected>10 תמונות</option>
+                      <option value="15">15 תמונות</option>
+                      <option value="20">20 תמונות</option>
+                      <option value="25">25 תמונות</option>
+                      <option value="0">ללא הפסקות</option>
+                  </select>
+              </div>
+              <button class="save-button" id="saveButton">שמור הגדרות</button>
           </div>
       </div>
       
@@ -297,8 +431,8 @@ def generate_html():
       {''.join(slides)}
     
     <script>
-        const SLIDE_DURATION = {int(SLIDE_DURATION * 1000)}; // milliseconds
-        const BREAK_INTERVAL = {BREAK_INTERVAL}; // slides before break
+        let SLIDE_DURATION = {int(SLIDE_DURATION * 1000)}; // milliseconds (default)
+        let BREAK_INTERVAL = {BREAK_INTERVAL}; // slides before break (default)
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const progressBar = document.getElementById('progressBar');
@@ -309,10 +443,16 @@ def generate_html():
         const continueButton = document.getElementById('continueButton');
         const breakInfo = document.getElementById('breakInfo');
         const breakProgress = document.getElementById('breakProgress');
+        const slideDurationInput = document.getElementById('slideDuration');
+        const breakIntervalSelect = document.getElementById('breakInterval');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const saveButton = document.getElementById('saveButton');
         
         // Game state
         let gameStarted = false;
         let onBreak = false;
+        let settingsVisible = false;
         
         // Timer state
         let timerState = 'stopped'; // 'running', 'paused', 'stopped'
@@ -338,6 +478,17 @@ def generate_html():
         }}
         
         function startGame() {{
+            // Read settings from UI
+            const durationValue = parseInt(slideDurationInput.value);
+            const intervalValue = parseInt(breakIntervalSelect.value);
+            
+            // Validate and apply settings
+            if (durationValue >= 1 && durationValue <= 30) {{
+                SLIDE_DURATION = durationValue * 1000; // convert to milliseconds
+            }}
+            
+            BREAK_INTERVAL = intervalValue; // 0 means no breaks
+            
             gameStarted = true;
             startScreen.classList.add('hidden');
             slideCounter.classList.add('visible');
@@ -366,6 +517,43 @@ def generate_html():
             breakScreen.classList.add('hidden');
             if (gameStarted && currentSlide < slides.length - 1) {{
                 resetTimer();
+            }}
+        }}
+        
+        function toggleSettings() {{
+            settingsVisible = !settingsVisible;
+            if (settingsVisible) {{
+                settingsPanel.classList.add('visible');
+            }} else {{
+                settingsPanel.classList.remove('visible');
+            }}
+        }}
+        
+        function saveSettings() {{
+            // Read and validate settings
+            const durationValue = parseInt(slideDurationInput.value);
+            const intervalValue = parseInt(breakIntervalSelect.value);
+            
+            if (durationValue >= 1 && durationValue <= 30) {{
+                // Show success feedback
+                saveButton.textContent = '✓ נשמר!';
+                saveButton.classList.add('success');
+                
+                setTimeout(() => {{
+                    saveButton.textContent = 'שמור הגדרות';
+                    saveButton.classList.remove('success');
+                }}, 2000);
+                
+                // Hide settings panel
+                setTimeout(() => {{
+                    toggleSettings();
+                }}, 1000);
+            }} else {{
+                // Show error
+                saveButton.textContent = 'שגיאה - בדוק ערכים';
+                setTimeout(() => {{
+                    saveButton.textContent = 'שמור הגדרות';
+                }}, 2000);
             }}
         }}
         
@@ -448,7 +636,7 @@ def generate_html():
                 showSlide(currentSlide);
                 
                 // Check if it's time for a break (after showing the slide)
-                if (currentSlide % BREAK_INTERVAL === 0 && currentSlide < slides.length - 1) {{
+                if (BREAK_INTERVAL > 0 && currentSlide % BREAK_INTERVAL === 0 && currentSlide < slides.length - 1) {{
                     showBreakScreen();
                 }}
             }}
@@ -533,6 +721,23 @@ def generate_html():
         continueButton.addEventListener('click', (e) => {{
             e.stopPropagation();
             hideBreakScreen();
+        }});
+        
+        // Settings button click handler
+        settingsButton.addEventListener('click', (e) => {{
+            e.stopPropagation();
+            toggleSettings();
+        }});
+        
+        // Save button click handler
+        saveButton.addEventListener('click', (e) => {{
+            e.stopPropagation();
+            saveSettings();
+        }});
+        
+        // Prevent settings panel clicks from bubbling
+        settingsPanel.addEventListener('click', (e) => {{
+            e.stopPropagation();
         }});
     </script>
 </body>
