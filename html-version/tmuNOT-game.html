@@ -109,7 +109,6 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(45deg, red 50%, green 50%);
             z-index: 3000;
             display: flex;
             flex-direction: column;
@@ -117,6 +116,29 @@
             justify-content: center;
             color: white;
             text-align: center;
+            overflow: hidden;
+        }
+        
+        .file-selection-screen::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(45deg, red 50%, green 50%);
+            transform: translate(-50%, -50%);
+            animation: rotateBackground 40s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes rotateBackground {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
         
         .file-selection-screen.hidden {
