@@ -449,6 +449,93 @@
             border-bottom: 20px solid transparent;
             margin-left: 8px;
         }
+        
+        /* Completion screen */
+        .completion-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .completion-screen.hidden {
+            display: none;
+        }
+        
+        .completion-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background-color: red;
+        }
+        
+        .completion-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background-color: green;
+        }
+        
+        .completion-content {
+            position: relative;
+            z-index: 2001;
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            direction: rtl;
+            font-family: 'Heebo', sans-serif;
+        }
+        
+        .completion-title {
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .completion-subtitle {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        .completion-message {
+            font-size: 20px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            max-width: 600px;
+            line-height: 1.4;
+        }
+        
+        .restart-button {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-family: 'Heebo', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2001;
+            font-weight: bold;
+        }
+        
+        .restart-button:hover {
+            background-color: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -533,6 +620,19 @@
         </div>
     </div>
     
+    <!-- Completion screen -->
+    <div class="completion-screen hidden" id="completionScreen">
+        <div class="completion-left"></div>
+        <div class="completion-right"></div>
+        <div class="completion-content">
+            <div class="completion-title">🎉 אלופים! 🎉</div>
+            <div class="completion-subtitle">איזה כיף!</div>
+            <p class="completion-message">סיימתם את המשחק!</p>
+            <p class="completion-message" style="margin-top: 30px; margin-bottom: 10px;">כדי להתחיל ולבחור תמונות מחדש לחצו כאן</p>
+        </div>
+        <button class="restart-button" id="restartButton">🔄 התחל מחדש</button>
+    </div>
+    
     <!-- Slides will be generated here -->
     <div id="slidesContainer"></div>
     
@@ -566,6 +666,8 @@
         const slideDurationInput = document.getElementById('slideDuration');
         const breakIntervalSelect = document.getElementById('breakInterval');
         const saveButton = document.getElementById('saveButton');
+        const completionScreen = document.getElementById('completionScreen');
+        const restartButton = document.getElementById('restartButton');
         
         // Game state
         let gameStarted = false;
@@ -704,6 +806,9 @@
                 if (BREAK_INTERVAL > 0 && currentSlide % BREAK_INTERVAL === 0 && currentSlide < slides.length - 1) {
                     showBreakScreen();
                 }
+            } else {
+                // We're trying to go past the last slide, show completion screen
+                showCompletionScreen();
             }
         }
         
@@ -737,6 +842,61 @@
             if (gameStarted && currentSlide < slides.length - 1) {
                 resetTimer();
             }
+        }
+        
+        function showCompletionScreen() {
+            gameStarted = false;
+            slideCounter.classList.remove('visible');
+            completionScreen.classList.remove('hidden');
+        }
+        
+        function resetGame() {
+            // Reset all game state
+            gameStarted = false;
+            currentSlide = 0;
+            slides = [];
+            selectedImages = [];
+            onBreak = false;
+            timerState = 'stopped';
+            startTime = null;
+            pausedTime = 0;
+            
+            // Cancel any running animation
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            // Reset UI elements
+            progressBar.style.width = '0%';
+            slideCounter.classList.remove('visible');
+            slideCounter.textContent = '1/0';
+            
+            // Hide all screens except file selection
+            completionScreen.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            breakScreen.classList.add('hidden');
+            fileSelectionScreen.classList.remove('hidden');
+            
+            // Reset file selection UI
+            selectedFilesInfo.classList.remove('visible');
+            startGameButton.classList.remove('visible');
+            filesCount.textContent = '0 תמונות נבחרו';
+            
+            // Reset settings to default
+            slideDurationInput.value = '4';
+            breakIntervalSelect.value = '10';
+            SLIDE_DURATION = 4000;
+            BREAK_INTERVAL = 10;
+            
+            // Reset settings panel
+            settingsPanel.classList.remove('visible');
+            settingsVisible = false;
+            saveButton.textContent = 'שמור הגדרות';
+            saveButton.classList.remove('success');
+            
+            // Clear slides container
+            slidesContainer.innerHTML = '';
         }
         
         function toggleSettings() {
@@ -782,15 +942,11 @@
             pausedTime = 0;
             progressBar.style.width = '0%';
             
-            if (currentSlide < slides.length - 1) {
-                timerState = 'running';
-                setTimeout(() => {
-                    updateProgress();
-                }, 50);
-            } else {
-                timerState = 'stopped';
-                progressBar.style.width = '100%';
-            }
+            // Start timer for all slides, including the last one
+            timerState = 'running';
+            setTimeout(() => {
+                updateProgress();
+            }, 50);
         }
         
         function pauseTimer() {
@@ -803,7 +959,7 @@
         }
         
         function resumeTimer() {
-            if (timerState === 'paused' && currentSlide < slides.length - 1) {
+            if (timerState === 'paused' && gameStarted && !onBreak) {
                 timerState = 'running';
                 updateProgress();
             }
@@ -836,7 +992,9 @@
                     if (currentSlide < slides.length - 1) {
                         nextSlide();
                     } else {
+                        // We're at the last slide, show completion screen
                         timerState = 'stopped';
+                        showCompletionScreen();
                     }
                 }, 50);
             } else {
@@ -960,6 +1118,10 @@
             } else {
                 nextSlide();
             }
+        });
+        
+        restartButton.addEventListener('click', () => {
+            resetGame();
         });
         
         // Make body focusable
