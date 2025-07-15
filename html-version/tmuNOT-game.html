@@ -362,6 +362,33 @@
             background-color: rgba(46, 125, 50, 1);
         }
         
+        /* Credits text */
+        .credits-text {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Heebo', sans-serif;
+            font-size: 12px;
+            direction: rtl;
+            text-align: right;
+            z-index: 3001;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+        
+        .credits-text a {
+            color: #87CEEB;
+            text-decoration: none;
+        }
+        
+        .credits-text a:hover {
+            text-decoration: underline;
+        }
+        
         /* Break screen - same as before */
         .break-screen {
             position: fixed;
@@ -588,6 +615,10 @@
                 </select>
             </div>
             <button class="save-button" id="saveButton">שמור הגדרות</button>
+        </div>
+        
+        <div class="credits-text">
+            <strong>זכויות המשחק שמורות לדונקי - <a href="https://youtu.be/0VcDc3aWCDE?feature=shared&t=763" target="_blank">חרטטוני</a></strong> ©️
         </div>
     </div>
     

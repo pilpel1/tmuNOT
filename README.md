@@ -15,7 +15,7 @@
 - הקרינו על מסך או קיר לחוויה הטובה ביותר 📽️
 - ניתן לשחק גם במפגש וירטואלי באמצעות שיתוף מסך 💻
 
-**זכויות המשחק שמורות לדונקי - [חרטטוני](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763)** ©️
+**זכויות המשחק שמורות לדונקי - [חרטטוני](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763){:target="_blank"}** ©️
 
 ### דרישות
 - Python 3.x
@@ -82,7 +82,7 @@ A tool for creating interactive HTML presentations from images for a fun and con
 - Project on a screen or wall for the best experience 📽️
 - Can also be played in virtual meetings via screen sharing 💻
 
-**Game rights reserved to Donkey - [Hartetooni](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763)** ©️
+**Game rights reserved to Donkey - [Hartetooni](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763){:target="_blank"}** ©️
 
 ### Requirements
 - Python 3.x
