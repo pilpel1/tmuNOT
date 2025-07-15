@@ -15,6 +15,32 @@
             font-family: 'Heebo', sans-serif;
         }
         
+        html[dir="rtl"] .file-selection-screen,
+        html[dir="rtl"] .start-screen,
+        html[dir="rtl"] .break-screen,
+        html[dir="rtl"] .completion-screen,
+        html[dir="rtl"] .break-content,
+        html[dir="rtl"] .completion-content,
+        html[dir="rtl"] .file-selection-title,
+        html[dir="rtl"] .file-selection-subtitle,
+        html[dir="rtl"] .drop-zone,
+        html[dir="rtl"] .selected-files-info {
+            direction: rtl;
+        }
+        
+        html[dir="ltr"] .file-selection-screen,
+        html[dir="ltr"] .start-screen,
+        html[dir="ltr"] .break-screen,
+        html[dir="ltr"] .completion-screen,
+        html[dir="ltr"] .break-content,
+        html[dir="ltr"] .completion-content,
+        html[dir="ltr"] .file-selection-title,
+        html[dir="ltr"] .file-selection-subtitle,
+        html[dir="ltr"] .drop-zone,
+        html[dir="ltr"] .selected-files-info {
+            direction: ltr;
+        }
+        
         .slide {
             display: flex;
             width: 100vw;
@@ -91,7 +117,6 @@
             justify-content: center;
             color: white;
             text-align: center;
-            direction: rtl;
         }
         
         .file-selection-screen.hidden {
@@ -246,8 +271,15 @@
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
             z-index: 2001;
             font-family: 'Heebo', sans-serif;
-            direction: rtl;
             text-align: center;
+        }
+        
+        html[dir="rtl"] .countdown-text {
+            direction: rtl;
+        }
+        
+        html[dir="ltr"] .countdown-text {
+            direction: ltr;
         }
         
         .settings-button {
@@ -283,8 +315,6 @@
             padding: 20px;
             border-radius: 10px;
             font-family: 'Heebo', sans-serif;
-            direction: rtl;
-            text-align: right;
             z-index: 3001;
             opacity: 0;
             transform: translateY(20px);
@@ -302,14 +332,12 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 15px;
-            text-align: right;
         }
         
         .setting-item {
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            justify-content: flex-start;
             gap: 10px;
         }
         
@@ -373,11 +401,48 @@
             border-radius: 8px;
             font-family: 'Heebo', sans-serif;
             font-size: 12px;
-            direction: rtl;
-            text-align: right;
             z-index: 3001;
             max-width: 300px;
             line-height: 1.4;
+        }
+        
+        html[dir="rtl"] .credits-text {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        html[dir="ltr"] .credits-text {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        /* Settings panel direction */
+        html[dir="rtl"] .settings-panel {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        html[dir="rtl"] .settings-title {
+            text-align: right;
+        }
+        
+        html[dir="rtl"] .setting-item {
+            justify-content: flex-start;
+            flex-direction: row;
+        }
+        
+        html[dir="ltr"] .settings-panel {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        html[dir="ltr"] .settings-title {
+            text-align: left;
+        }
+        
+        html[dir="ltr"] .setting-item {
+            justify-content: flex-start;
+            flex-direction: row;
         }
         
         .credits-text a {
@@ -431,7 +496,6 @@
             text-align: center;
             color: white;
             margin-bottom: 30px;
-            direction: rtl;
             font-family: 'Heebo', sans-serif;
         }
         
@@ -519,7 +583,6 @@
             text-align: center;
             color: white;
             margin-bottom: 30px;
-            direction: rtl;
             font-family: 'Heebo', sans-serif;
         }
         
@@ -568,8 +631,8 @@
 <body>
     <!-- File selection screen -->
     <div class="file-selection-screen" id="fileSelectionScreen">
-        <div class="file-selection-title">tmuNOT</div>
-        <div class="file-selection-subtitle">בחר תמונות למשחק</div>
+        <div class="file-selection-title" id="gameTitle">tmuNOT</div>
+        <div class="file-selection-subtitle" id="selectImagesSubtitle">בחר תמונות למשחק</div>
         
         <div class="file-input-container">
             <button class="file-input-button" onclick="document.getElementById('fileInput').click()">
@@ -584,8 +647,8 @@
         </div>
         
         <div class="drop-zone" id="dropZone">
-            <div class="drop-zone-text">🖼️ או גרור תמונות לכאן</div>
-            <div class="drop-zone-subtext">תומך ב-JPG, PNG, GIF</div>
+            <div class="drop-zone-text" id="dropZoneText">🖼️ או גרור תמונות לכאן</div>
+            <div class="drop-zone-subtext" id="dropZoneSubtext">תומך ב-JPG, PNG, GIF</div>
         </div>
         
         <div class="selected-files-info" id="selectedFilesInfo">
@@ -600,11 +663,11 @@
         <div class="settings-panel" id="settingsPanel">
             <div class="settings-title">הגדרות משחק</div>
             <div class="setting-item">
-                <label class="setting-label">זמן לתמונה (שניות):</label>
+                <label class="setting-label" for="slideDuration">זמן לתמונה (שניות):</label>
                 <input type="number" id="slideDuration" class="setting-input" value="4" min="1" max="30">
             </div>
             <div class="setting-item">
-                <label class="setting-label">תמונות לסבב:</label>
+                <label class="setting-label" for="breakInterval">תמונות לסבב:</label>
                 <select id="breakInterval" class="setting-select">
                     <option value="5">5 תמונות</option>
                     <option value="10" selected>10 תמונות</option>
@@ -614,10 +677,17 @@
                     <option value="0">ללא הפסקות</option>
                 </select>
             </div>
+            <div class="setting-item">
+                <label class="setting-label" for="languageSelect">שפה:</label>
+                <select id="languageSelect" class="setting-select">
+                    <option value="he" selected>עברית</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
             <button class="save-button" id="saveButton">שמור הגדרות</button>
         </div>
         
-        <div class="credits-text">
+        <div class="credits-text" id="creditsText">
             <strong>זכויות המשחק שמורות לדונקי - <a href="https://youtu.be/0VcDc3aWCDE?feature=shared&t=763" target="_blank">חרטטוני</a></strong> ©️<br>
             <span style="margin-top: 5px; display: inline-block;">פותח על ידי <a href="https://github.com/pilpel1/tmuNOT" target="_blank">pilpel1</a></span>
         </div>
@@ -643,7 +713,7 @@
         <div class="break-left"></div>
         <div class="break-right"></div>
         <div class="break-content">
-            <div class="break-title">הפסקה!</div>
+            <div class="break-title" id="breakTitle">הפסקה!</div>
             <div class="break-info" id="breakInfo">סבב 1 הסתיים</div>
             <div class="break-info" id="breakProgress">תמונות 1-10 מתוך 0</div>
         </div>
@@ -657,10 +727,10 @@
         <div class="completion-left"></div>
         <div class="completion-right"></div>
         <div class="completion-content">
-            <div class="completion-title">🎉 אלופים! 🎉</div>
-            <div class="completion-subtitle">איזה כיף!</div>
-            <p class="completion-message">סיימתם את המשחק!</p>
-            <p class="completion-message" style="margin-top: 30px; margin-bottom: 10px;">כדי להתחיל ולבחור תמונות מחדש לחצו כאן</p>
+            <div class="completion-title" id="completionTitle">🎉 אלופים! 🎉</div>
+            <div class="completion-subtitle" id="completionSubtitle">איזה כיף!</div>
+            <p class="completion-message" id="completionMessage">סיימתם את המשחק!</p>
+            <p class="completion-message" id="restartMessage" style="margin-top: 30px; margin-bottom: 10px;">כדי להתחיל ולבחור תמונות מחדש לחצו כאן</p>
         </div>
         <button class="restart-button" id="restartButton">🔄 התחל מחדש</button>
     </div>
@@ -672,9 +742,159 @@
         // Configuration
         let SLIDE_DURATION = 4000; // milliseconds (default)
         let BREAK_INTERVAL = 10; // slides before break (default)
+        let CURRENT_LANGUAGE = 'he'; // default language
         let currentSlide = 0;
         let slides = [];
         let selectedImages = [];
+        
+        // Translations
+        const translations = {
+            he: {
+                gameTitle: 'תמוNOT',
+                selectImages: 'בחר תמונות למשחק',
+                selectImagesButton: '📁 בחר תמונות',
+                selectFolderButton: '📂 בחר תיקיית תמונות',
+                dropZoneText: '🖼️ או גרור תמונות לכאן',
+                dropZoneSubtext: 'תומך ב-JPG, PNG, GIF',
+                startGameButton: '🎮 התחל משחק',
+                imagesSelected: 'תמונות נבחרו',
+                ready: 'מוכנים?',
+                breakTitle: 'הפסקה!',
+                roundEnded: 'סבב {0} הסתיים',
+                imagesProgress: 'תמונות {0}-{1} מתוך {2}',
+                completionTitle: '🎉 אלופים! 🎉',
+                completionSubtitle: 'איזה כיף!',
+                completionMessage: 'סיימתם את המשחק!',
+                restartMessage: 'כדי להתחיל ולבחור תמונות מחדש לחצו כאן',
+                restartButton: '🔄 התחל מחדש',
+                settingsTitle: 'הגדרות משחק',
+                slideTime: 'זמן לתמונה (שניות):',
+                imagesPerRound: 'תמונות לסבב:',
+                language: 'שפה:',
+                imagesOption: 'תמונות',
+                noBreaks: 'ללא הפסקות',
+                saveSettings: 'שמור הגדרות',
+                settingsSaved: '✓ נשמר!',
+                settingsError: 'שגיאה - בדוק ערכים',
+                noImagesFound: 'לא נמצאו תמונות! אנא בחר קבצי תמונות.',
+                creditsGame: 'זכויות המשחק שמורות לדונקי',
+                creditsDeveloper: 'פותח על ידי'
+            },
+            en: {
+                gameTitle: 'tmuNOT',
+                selectImages: 'Select Images for Game',
+                selectImagesButton: '📁 Select Images',
+                selectFolderButton: '📂 Select Image Folder',
+                dropZoneText: '🖼️ Or drag images here',
+                dropZoneSubtext: 'Supports JPG, PNG, GIF',
+                startGameButton: '🎮 Start Game',
+                imagesSelected: 'images selected',
+                ready: 'Ready?',
+                breakTitle: 'Break!',
+                roundEnded: 'Round {0} completed',
+                imagesProgress: 'Images {0}-{1} of {2}',
+                completionTitle: '🎉 Champions! 🎉',
+                completionSubtitle: 'What fun!',
+                completionMessage: 'You completed the game!',
+                restartMessage: 'To start and select new images click here',
+                restartButton: '🔄 Start Over',
+                settingsTitle: 'Game Settings',
+                slideTime: 'Time per image (seconds):',
+                imagesPerRound: 'Images per round:',
+                language: 'Language:',
+                imagesOption: 'images',
+                noBreaks: 'No breaks',
+                saveSettings: 'Save Settings',
+                settingsSaved: '✓ Saved!',
+                settingsError: 'Error - check values',
+                noImagesFound: 'No images found! Please select image files.',
+                creditsGame: 'Game rights reserved to Donkey',
+                creditsDeveloper: 'Developed by'
+            }
+        };
+        
+        // Translation helper function
+        function t(key, ...args) {
+            let text = translations[CURRENT_LANGUAGE][key] || key;
+            // Replace {0}, {1}, etc. with provided arguments
+            args.forEach((arg, index) => {
+                text = text.replace(new RegExp(`\\{${index}\\}`, 'g'), arg);
+            });
+            return text;
+        }
+        
+        // Update text direction based on language
+        function updateTextDirection() {
+            const isRTL = CURRENT_LANGUAGE === 'he';
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            document.documentElement.lang = CURRENT_LANGUAGE;
+        }
+        
+        // Update all UI text elements
+        function updateUIText() {
+            // File selection screen
+            document.getElementById('gameTitle').textContent = t('gameTitle');
+            document.getElementById('selectImagesSubtitle').textContent = t('selectImages');
+            const fileButtons = document.querySelectorAll('.file-input-button');
+            if (fileButtons[0]) fileButtons[0].innerHTML = t('selectImagesButton');
+            if (fileButtons[1]) fileButtons[1].innerHTML = t('selectFolderButton');
+            document.getElementById('dropZoneText').innerHTML = t('dropZoneText');
+            document.getElementById('dropZoneSubtext').textContent = t('dropZoneSubtext');
+            document.getElementById('startGameButton').innerHTML = t('startGameButton');
+            
+            // Settings
+            document.querySelector('.settings-title').textContent = t('settingsTitle');
+            const slideTimeLabel = document.querySelector('label[for="slideDuration"]');
+            if (slideTimeLabel) slideTimeLabel.textContent = t('slideTime');
+            const imagesPerRoundLabel = document.querySelector('label[for="breakInterval"]');
+            if (imagesPerRoundLabel) imagesPerRoundLabel.textContent = t('imagesPerRound');
+            const languageLabel = document.querySelector('label[for="languageSelect"]');
+            if (languageLabel) languageLabel.textContent = t('language');
+            document.querySelector('#saveButton').textContent = t('saveSettings');
+            
+            // Start screen countdown text (reset to default)
+            document.getElementById('countdownText').textContent = t('ready');
+            
+            // Break screen
+            document.getElementById('breakTitle').textContent = t('breakTitle');
+            
+            // Completion screen
+            document.getElementById('completionTitle').textContent = t('completionTitle');
+            document.getElementById('completionSubtitle').textContent = t('completionSubtitle');
+            document.getElementById('completionMessage').textContent = t('completionMessage');
+            document.getElementById('restartMessage').textContent = t('restartMessage');
+            document.getElementById('restartButton').textContent = t('restartButton');
+            
+            // Credits
+            const creditsText = document.getElementById('creditsText');
+            const linkText = CURRENT_LANGUAGE === 'he' ? 'חרטטוני' : 'Hartetooni';
+            creditsText.innerHTML = `
+                <strong>${t('creditsGame')} - <a href="https://youtu.be/0VcDc3aWCDE?feature=shared&t=763" target="_blank">${linkText}</a></strong> ©️<br>
+                <span style="margin-top: 5px; display: inline-block;">${t('creditsDeveloper')} <a href="https://github.com/pilpel1/tmuNOT" target="_blank">pilpel1</a></span>
+            `;
+            
+            // Update select options
+            updateSelectOptions();
+            
+            // Update files count if images are selected
+            if (selectedImages.length > 0) {
+                updateFilesInfo();
+            }
+        }
+        
+        // Update select options text
+        function updateSelectOptions() {
+            const breakIntervalSelect = document.getElementById('breakInterval');
+            const options = breakIntervalSelect.options;
+            
+            for (let i = 0; i < options.length - 1; i++) {
+                const value = options[i].value;
+                options[i].textContent = `${value} ${t('imagesOption')}`;
+            }
+            
+            // Last option is "no breaks"
+            options[options.length - 1].textContent = t('noBreaks');
+        }
         
         // UI Elements
         const fileSelectionScreen = document.getElementById('fileSelectionScreen');
@@ -718,7 +938,7 @@
             const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
             
             if (imageFiles.length === 0) {
-                alert('לא נמצאו תמונות! אנא בחר קבצי תמונות.');
+                alert(t('noImagesFound'));
                 return;
             }
             
@@ -750,7 +970,7 @@
         }
         
         function updateFilesInfo() {
-            filesCount.textContent = `${selectedImages.length} תמונות נבחרו`;
+            filesCount.textContent = `${selectedImages.length} ${t('imagesSelected')}`;
             selectedFilesInfo.classList.add('visible');
             startGameButton.classList.add('visible');
         }
@@ -862,8 +1082,8 @@
             const startSlide = (roundNumber - 1) * BREAK_INTERVAL + 1;
             const endSlide = roundNumber * BREAK_INTERVAL;
             
-            breakInfo.textContent = `סבב ${roundNumber} הסתיים`;
-            breakProgress.textContent = `תמונות ${startSlide}-${endSlide} מתוך ${slides.length}`;
+            breakInfo.textContent = t('roundEnded', roundNumber);
+            breakProgress.textContent = t('imagesProgress', startSlide, endSlide, slides.length);
             
             breakScreen.classList.remove('hidden');
         }
@@ -918,8 +1138,10 @@
             // Reset settings to default
             slideDurationInput.value = '4';
             breakIntervalSelect.value = '10';
+            document.getElementById('languageSelect').value = 'he';
             SLIDE_DURATION = 4000;
             BREAK_INTERVAL = 10;
+            CURRENT_LANGUAGE = 'he';
             
             // Reset settings panel
             settingsPanel.classList.remove('visible');
@@ -929,6 +1151,10 @@
             
             // Clear slides container
             slidesContainer.innerHTML = '';
+            
+            // Reset language and UI
+            updateTextDirection();
+            updateUIText();
         }
         
         function toggleSettings() {
@@ -943,13 +1169,21 @@
         function saveSettings() {
             const durationValue = parseInt(slideDurationInput.value);
             const intervalValue = parseInt(breakIntervalSelect.value);
+            const languageValue = document.getElementById('languageSelect').value;
             
             if (durationValue >= 1 && durationValue <= 30) {
-                saveButton.textContent = '✓ נשמר!';
+                // Update language if changed
+                if (languageValue !== CURRENT_LANGUAGE) {
+                    CURRENT_LANGUAGE = languageValue;
+                    updateTextDirection();
+                    updateUIText();
+                }
+                
+                saveButton.textContent = t('settingsSaved');
                 saveButton.classList.add('success');
                 
                 setTimeout(() => {
-                    saveButton.textContent = 'שמור הגדרות';
+                    saveButton.textContent = t('saveSettings');
                     saveButton.classList.remove('success');
                 }, 2000);
                 
@@ -957,9 +1191,9 @@
                     toggleSettings();
                 }, 1000);
             } else {
-                saveButton.textContent = 'שגיאה - בדוק ערכים';
+                saveButton.textContent = t('settingsError');
                 setTimeout(() => {
-                    saveButton.textContent = 'שמור הגדרות';
+                    saveButton.textContent = t('saveSettings');
                 }, 2000);
             }
         }
@@ -1076,7 +1310,7 @@
         });
         
         function startCountdown() {
-            const countdownSequence = ['מוכנים?', '3', '2', '1'];
+            const countdownSequence = [t('ready'), '3', '2', '1'];
             const timings = [2500, 1000, 1000, 1000]; // First item gets 2.5 seconds, rest get 1 second
             let currentIndex = 0;
             
@@ -1106,6 +1340,16 @@
         saveButton.addEventListener('click', (e) => {
             e.stopPropagation();
             saveSettings();
+        });
+        
+        // Language change listener
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            const newLanguage = e.target.value;
+            if (newLanguage !== CURRENT_LANGUAGE) {
+                CURRENT_LANGUAGE = newLanguage;
+                updateTextDirection();
+                updateUIText();
+            }
         });
         
         settingsPanel.addEventListener('click', (e) => {
@@ -1155,6 +1399,10 @@
         restartButton.addEventListener('click', () => {
             resetGame();
         });
+        
+        // Initialize language and UI
+        updateTextDirection();
+        updateUIText();
         
         // Make body focusable
         document.body.tabIndex = -1;
