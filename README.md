@@ -1,9 +1,9 @@
-# יוצר מצגות תמונות / Image Presentation Generator
+# tmuNOT - משחק תמונות / Image Game
 
 ## עברית
 
 ### תיאור
-כלי ליצירת מצגות HTML אינטראקטיביות מתמונות לצורך משחק חברה מבלבל ומצחיק! כל תמונה מוצגת על רקע אקראי - אדום או ירוק.
+משחק HTML אינטראקטיבי מתמונות לצורך משחק חברה מבלבל ומצחיק! כל תמונה מוצגת על רקע אקראי - אדום או ירוק.
 
 ### חוקי המשחק
 **משחק חברה לכל הגילאים - יכול להיות ראש בראש או קבוצות!**
@@ -18,33 +18,33 @@
 **זכויות המשחק שמורות לדונקי - [חרטטוני](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763){:target="_blank"}** ©️
 
 ### דרישות
-- Python 3.x
-- תמונות בפורמט JPG, JPEG או PNG
+- דפדפן מודרני (Chrome, Firefox, Safari, Edge)
+- תמונות בפורמט JPG, JPEG, PNG או GIF
 
 ### איך להשתמש
 
-1. **הכנת התמונות:**
-   - שים את כל התמונות שלך בתיקיית `images/`
-   - הכלי תומך בפורמטים: `.jpg`, `.jpeg`, `.png`
+1. **פתח את המשחק:**
+   - פתח את הקובץ `html-version/tmuNOT-game.html` בדפדפן
+   - או הורד והפעל מקומית
 
-2. **יצירת המצגת:**
-   ```bash
-   # באמצעות הסקריפט:
-   python generate_presentation.py
-   
-   # או באמצעות קובץ ה-bat:
-   create_presentation.bat
-   ```
+2. **בחר תמונות:**
+   - לחץ על "בחר תמונות" או "בחר תיקיית תמונות"
+   - או פשוט גרור תמונות למסך
+   - תומך בפורמטים: `.jpg`, `.jpeg`, `.png`, `.gif`
 
-3. **הצגת המצגת:**
-   - פתח את הקובץ `presentation.html` בדפדפן
-   - התאם הגדרות במסך הפתיחה (זמן תמונה, תמונות לסבב)
-   - לחץ על כפתור ההפעלה או רווח להתחלה
+3. **התאם הגדרות:**
+   - זמן לתמונה (1-30 שניות)
+   - תמונות לסבב (או ללא הפסקות)
+   - שפה (עברית/אנגלית)
+
+4. **התחל לשחק:**
+   - לחץ על "התחל משחק"
    - לחץ F11 למסך מלא
    - השתמש בחצים שמאל/ימין לניווט או לחץ בחצי שמאל/ימין של המסך
+   - רווח להשהיה/המשכה
 
 ### תכונות
-- 📱 עיצוב רספונסיבי 16:9
+- 📱 עיצוב רספונסיבי למכשירים שונים
 - 🎨 רקע אקראי לכל תמונה (אדום/ירוק) - מקסימום 3 ברצף
 - ⏱️ טיימר אוטומטי עם בר התקדמות וזמן מתכוונן
 - 🎬 מסך פתיחה עם הגדרות משחק
@@ -53,15 +53,18 @@
 - ⌨️ ניווט עם מקלדת (חצים, רווח לפאוז)
 - 🖱️ ניווט עם עכבר (לחיצה)
 - 🖼️ התאמה אוטומטית של גודל התמונות
-
+- 🌐 תמיכה בעברית ואנגלית
+- 📂 בחירת תמונות בגרירה או דפדוף
 
 ### מבנה הקבצים
 ```
 tmuNOT/
-├── images/                    # תיקיית התמונות
-├── generate_presentation.py   # הסקריפט הראשי
-├── create_presentation.bat    # קובץ הפעלה מהיר
-├── presentation.html          # המצגת שנוצרת
+├── html-version/
+│   └── tmuNOT-game.html      # המשחק הראשי
+├── archive/                   # קבצים ישנים (גישה Python)
+│   ├── generate_presentation.py
+│   └── create_presentation.bat
+├── images/                    # תיקיית תמונות לדוגמה
 └── README.md                 # קובץ זה
 ```
 
@@ -70,7 +73,7 @@ tmuNOT/
 ## English
 
 ### Description
-A tool for creating interactive HTML presentations from images for a fun and confusing party game! Each image is displayed on a random background - red or green.
+An interactive HTML game from images for a fun and confusing party game! Each image is displayed on a random background - red or green.
 
 ### Game Rules
 **A party game for all ages - can be played head-to-head or in teams!**
@@ -85,33 +88,33 @@ A tool for creating interactive HTML presentations from images for a fun and con
 **Game rights reserved to Donkey - [Hartetooni](https://youtu.be/0VcDc3aWCDE?feature=shared&t=763){:target="_blank"}** ©️
 
 ### Requirements
-- Python 3.x
-- Images in JPG, JPEG, or PNG format
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Images in JPG, JPEG, PNG, or GIF format
 
 ### How to Use
 
-1. **Prepare Images:**
-   - Place all your images in the `images/` folder
-   - Supported formats: `.jpg`, `.jpeg`, `.png`
+1. **Open the Game:**
+   - Open `html-version/tmuNOT-game.html` in a web browser
+   - Or download and run locally
 
-2. **Generate Presentation:**
-   ```bash
-   # Using the script:
-   python generate_presentation.py
-   
-   # Or using the batch file:
-   create_presentation.bat
-   ```
+2. **Select Images:**
+   - Click "Select Images" or "Select Image Folder"
+   - Or simply drag images to the screen
+   - Supports formats: `.jpg`, `.jpeg`, `.png`, `.gif`
 
-3. **View Presentation:**
-   - Open `presentation.html` in a browser
-   - Configure settings on start screen (slide timing, break intervals)
-   - Click play button or press space to start
+3. **Configure Settings:**
+   - Time per image (1-30 seconds)
+   - Images per round (or no breaks)
+   - Language (Hebrew/English)
+
+4. **Start Playing:**
+   - Click "Start Game"
    - Press F11 for fullscreen
    - Use left/right arrow keys to navigate or click left/right half of the screen
+   - Space to pause/resume
 
 ### Features
-- 📱 Responsive 16:9 design
+- 📱 Responsive design for different devices
 - 🎨 Random background for each image (red/green) - max 3 consecutive
 - ⏱️ Auto-timer with progress bar and configurable timing
 - 🎬 Start screen with game settings
@@ -120,15 +123,18 @@ A tool for creating interactive HTML presentations from images for a fun and con
 - ⌨️ Keyboard navigation (arrows, space to pause)
 - 🖱️ Mouse navigation (click)
 - 🖼️ Automatic image sizing
-
+- 🌐 Hebrew and English support
+- 📂 Drag & drop or browse image selection
 
 ### File Structure
 ```
 tmuNOT/
-├── images/                    # Images folder
-├── generate_presentation.py   # Main script
-├── create_presentation.bat    # Quick run batch file
-├── presentation.html          # Generated presentation
+├── html-version/
+│   └── tmuNOT-game.html      # Main game file
+├── archive/                   # Old files (Python approach)
+│   ├── generate_presentation.py
+│   └── create_presentation.bat
+├── images/                    # Sample images folder
 └── README.md                 # This file
 ```
 
